@@ -39,6 +39,7 @@ class Enemy:
             setattr(self, key, value)
         self.player = pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y, 50, 50))
 
+
 def render_players(player, enemies):
     _player = Player(player.split("||")[1].split(":")[1])
     vals = {}
@@ -48,7 +49,7 @@ def render_players(player, enemies):
         except:
             vals[key.split(":")[0]] = key.split(":")[1]
     _player.update(**vals)
-    
+
     _enemies = []
     for user_ in allUsers.values():
         if user_.split("||")[0].split(":")[1] != player.split("||")[0].split(":")[1]:
@@ -61,9 +62,8 @@ def render_players(player, enemies):
                     _val[key.split(":")[0]] = key.split(":")[1]
             _enemies[-1].update(**_val)
     return _player, _enemies
-    
-    
-    
+
+
 while running:
     clock.tick(120)
     for event in pygame.event.get():
@@ -75,17 +75,25 @@ while running:
     allUsers = net.send("message:get_all")
     allUsers = json.loads(allUsers)
     player, enemies = render_players(user, allUsers)
-    
+
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        net.send(f"message:update||{player.x - 5}:{player.y}:{player.health}:{player.rotation}")
+        net.send(
+            f"message:update||{player.x - 5}:{player.y}:{player.health}:{player.rotation}"
+        )
     if keys[pygame.K_RIGHT]:
-        net.send(f"message:update||{player.x + 5}:{player.y}:{player.health}:{player.rotation}")
+        net.send(
+            f"message:update||{player.x + 5}:{player.y}:{player.health}:{player.rotation}"
+        )
     if keys[pygame.K_UP]:
-        net.send(f"message:update||{player.x}:{player.y - 5}:{player.health}:{player.rotation}")
+        net.send(
+            f"message:update||{player.x}:{player.y - 5}:{player.health}:{player.rotation}"
+        )
     if keys[pygame.K_DOWN]:
-        net.send(f"message:update||{player.x}:{player.y + 5}:{player.health}:{player.rotation}")
-    
+        net.send(
+            f"message:update||{player.x}:{player.y + 5}:{player.health}:{player.rotation}"
+        )
+
     pygame.display.flip()
 
 pygame.quit()
