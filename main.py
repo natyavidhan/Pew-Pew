@@ -10,7 +10,7 @@ pygame.display.set_caption("Pew Pew")
 clock = pygame.time.Clock()
 running = True
 net = network.Network()
-
+mapdata = net.send("message:get_map")
 
 class Player:
     def __init__(self, id):
@@ -31,6 +31,15 @@ class Player:
         self.rect.y = int(self.y-self.player.get_height()/2)
         self.hitbox = pygame.Rect(self.rect.x, self.rect.y, self.player.get_width(), self.player.get_height())
         screen.blit(self.player, self.hitbox)
+        
+        self.playerData = f"{self.id} [{self.health}]"
+        self.playerText = pygame.font.SysFont("comicsans", 20).render(self.playerData, 1, (255, 255, 255))
+        self.playerTextRect = self.playerText.get_rect()
+        self.playerTextRect.center = (self.x, self.y)
+        self.playerTextRect.x -= int(self.playerText.get_width()/12)
+        self.playerTextRect.y -= int(self.playerText.get_height())
+        self.DataHitbox = pygame.Rect(self.playerTextRect.x, self.playerTextRect.y, self.playerText.get_width(), self.playerText.get_height())
+        screen.blit(self.playerText, self.playerTextRect)
 
 
 class Enemy:
@@ -52,6 +61,15 @@ class Enemy:
         self.rect.y = int(self.y-self.player.get_height()/2)
         self.hitbox = pygame.Rect(self.rect.x, self.rect.y, self.player.get_width(), self.player.get_height())
         screen.blit(self.player, self.hitbox)
+        
+        self.playerData = f"{self.id} [{self.health}]"
+        self.playerText = pygame.font.SysFont("comicsans", 20).render(self.playerData, 1, (255, 255, 255))
+        self.playerTextRect = self.playerText.get_rect()
+        self.playerTextRect.center = (self.x, self.y)
+        self.playerTextRect.x -= int(self.playerText.get_width()/12)
+        self.playerTextRect.y -= int(self.playerText.get_height())
+        self.DataHitbox = pygame.Rect(self.playerTextRect.x, self.playerTextRect.y, self.playerText.get_width(), self.playerText.get_height())
+        screen.blit(self.playerText, self.playerTextRect)
 
 
 def render_players(player, enemies):
@@ -81,26 +99,26 @@ def get_rotation(player_pos: list):
     cursor_pos = list(pygame.mouse.get_pos())
     return int(math.atan2(player_pos[0] - cursor_pos[0],  player_pos[1]-cursor_pos[1]) * 180 / math.pi)
 
-while running:
-    clock.tick(120)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+def render_map():
     screen.fill((12, 151, 0))
-    gameMap = net.send("message:get_map")
-    # print(gameMap)
-    gameMap = json.loads(gameMap)
+    gameMap = json.loads(mapdata)
     walls = pygame.image.load("assets/map/wall.png")
     x, y = 0, 0
     for i in gameMap:
         for k in i:
             if k == 1:
-                print(k)
                 screen.blit(walls, (x, y))
             x += 32
         x = 0
         y += 32
-        
+
+
+while running:
+    clock.tick(120)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    render_map()
     user = net.send("message:get")
     allUsers = net.send("message:get_all")
     allUsers = json.loads(allUsers)
