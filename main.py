@@ -1,6 +1,7 @@
 import pygame
 import network
 import json
+import math
 
 pygame.init()
 pygame.mixer.init()
@@ -8,7 +9,6 @@ screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Pew Pew")
 clock = pygame.time.Clock()
 running = True
-
 net = network.Network()
 
 
@@ -23,7 +23,14 @@ class Player:
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
-        self.player = pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y, 50, 50))
+        self.sprite = pygame.image.load("assets/player.png")
+        self.player = pygame.transform.rotate(self.sprite, self.rotation)
+        
+        self.rect = self.player.get_rect()
+        self.rect.x = self.x -int(self.player.get_width()/2)
+        self.rect.y = int(self.y-self.player.get_height()/2)
+        self.hitbox = pygame.Rect(self.rect.x, self.rect.y, self.player.get_width(), self.player.get_height())
+        screen.blit(self.player, self.hitbox)
 
 
 class Enemy:
@@ -37,7 +44,14 @@ class Enemy:
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
-        self.player = pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y, 50, 50))
+        self.sprite = pygame.image.load("assets/enemy.png")
+        self.player = pygame.transform.rotate(self.sprite, self.rotation)
+        
+        self.rect = self.player.get_rect()
+        self.rect.x = self.x -int(self.player.get_width()/2)
+        self.rect.y = int(self.y-self.player.get_height()/2)
+        self.hitbox = pygame.Rect(self.rect.x, self.rect.y, self.player.get_width(), self.player.get_height())
+        screen.blit(self.player, self.hitbox)
 
 
 def render_players(player, enemies):
@@ -63,18 +77,23 @@ def render_players(player, enemies):
             _enemies[-1].update(**_val)
     return _player, _enemies
 
+def get_rotation(player_pos: list):
+    cursor_pos = list(pygame.mouse.get_pos())
+    return int(math.atan2(player_pos[0] - cursor_pos[0],  player_pos[1]-cursor_pos[1]) * 180 / math.pi)
 
 while running:
     clock.tick(120)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    screen.fill((255, 255, 255))
+    screen.fill((12, 151, 0))
 
     user = net.send("message:get")
     allUsers = net.send("message:get_all")
     allUsers = json.loads(allUsers)
     player, enemies = render_players(user, allUsers)
+    player.rotation = get_rotation([player.x, player.y])
+    net.send(f"message:update||{player.x}:{player.y}:{player.health}:{player.rotation}")
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
