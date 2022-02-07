@@ -5,7 +5,7 @@ import math
 
 pygame.init()
 pygame.mixer.init()
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((800, 640))
 pygame.display.set_caption("Pew Pew")
 clock = pygame.time.Clock()
 running = True
@@ -87,7 +87,20 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     screen.fill((12, 151, 0))
-
+    gameMap = net.send("message:get_map")
+    # print(gameMap)
+    gameMap = json.loads(gameMap)
+    walls = pygame.image.load("assets/map/wall.png")
+    x, y = 0, 0
+    for i in gameMap:
+        for k in i:
+            if k == 1:
+                print(k)
+                screen.blit(walls, (x, y))
+            x += 32
+        x = 0
+        y += 32
+        
     user = net.send("message:get")
     allUsers = net.send("message:get_all")
     allUsers = json.loads(allUsers)
