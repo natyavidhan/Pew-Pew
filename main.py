@@ -39,7 +39,31 @@ class Enemy:
             setattr(self, key, value)
         self.player = pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y, 50, 50))
 
-
+def render_players(player, enemies):
+    _player = Player(player.split("||")[1].split(":")[1])
+    vals = {}
+    for key in player.split("||"):
+        try:
+            vals[key.split(":")[0]] = int(key.split(":")[1])
+        except:
+            vals[key.split(":")[0]] = key.split(":")[1]
+    _player.update(**vals)
+    
+    _enemies = []
+    for user_ in allUsers.values():
+        if user_.split("||")[0].split(":")[1] != player.split("||")[0].split(":")[1]:
+            _val = {}
+            _enemies.append(Enemy(user_.split("||")[1].split(":")[1]))
+            for key in user_.split("||"):
+                try:
+                    _val[key.split(":")[0]] = int(key.split(":")[1])
+                except:
+                    _val[key.split(":")[0]] = key.split(":")[1]
+            _enemies[-1].update(**_val)
+    return _player, _enemies
+    
+    
+    
 while running:
     clock.tick(120)
     for event in pygame.event.get():
@@ -48,29 +72,20 @@ while running:
     screen.fill((255, 255, 255))
 
     user = net.send("message:get")
-    player = Player(user.split("||")[1].split(":")[1])
-    vals = {}
-    for key in user.split("||"):
-        try:
-            vals[key.split(":")[0]] = int(key.split(":")[1])
-        except:
-            vals[key.split(":")[0]] = key.split(":")[1]
-    player.update(**vals)
-    # print(user)
     allUsers = net.send("message:get_all")
     allUsers = json.loads(allUsers)
-    enemies = []
-    for user_ in allUsers.values():
-        if user_.split("||")[0].split(":")[1] != user.split("||")[0].split(":")[1]:
-            _val = {}
-            enemies.append(Enemy(user_.split("||")[1].split(":")[1]))
-            for key in user_.split("||"):
-                try:
-                    _val[key.split(":")[0]] = int(key.split(":")[1])
-                except:
-                    _val[key.split(":")[0]] = key.split(":")[1]
-            enemies[-1].update(**_val)
-    print(allUsers)
+    player, enemies = render_players(user, allUsers)
+    
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        net.send(f"message:update||{player.x - 5}:{player.y}:{player.health}:{player.rotation}")
+    if keys[pygame.K_RIGHT]:
+        net.send(f"message:update||{player.x + 5}:{player.y}:{player.health}:{player.rotation}")
+    if keys[pygame.K_UP]:
+        net.send(f"message:update||{player.x}:{player.y - 5}:{player.health}:{player.rotation}")
+    if keys[pygame.K_DOWN]:
+        net.send(f"message:update||{player.x}:{player.y + 5}:{player.health}:{player.rotation}")
+    
     pygame.display.flip()
 
 pygame.quit()
