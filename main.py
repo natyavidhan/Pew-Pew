@@ -12,6 +12,7 @@ running = True
 net = network.Network()
 mapdata = net.send("message:get_map")
 
+
 class Player:
     def __init__(self, id):
         self.id = id
@@ -25,20 +26,29 @@ class Player:
             setattr(self, key, value)
         self.sprite = pygame.image.load("assets/player.png")
         self.player = pygame.transform.rotate(self.sprite, self.rotation)
-        
+
         self.rect = self.player.get_rect()
-        self.rect.x = self.x -int(self.player.get_width()/2)
-        self.rect.y = int(self.y-self.player.get_height()/2)
-        self.hitbox = pygame.Rect(self.rect.x, self.rect.y, self.player.get_width(), self.player.get_height())
+        self.rect.x = self.x - int(self.player.get_width() / 2)
+        self.rect.y = int(self.y - self.player.get_height() / 2)
+        self.hitbox = pygame.Rect(
+            self.rect.x, self.rect.y, self.player.get_width(), self.player.get_height()
+        )
         screen.blit(self.player, self.hitbox)
-        
+
         self.playerData = f"{self.id} [{self.health}]"
-        self.playerText = pygame.font.SysFont("comicsans", 20).render(self.playerData, 1, (255, 255, 255))
+        self.playerText = pygame.font.SysFont("comicsans", 20).render(
+            self.playerData, 1, (255, 255, 255)
+        )
         self.playerTextRect = self.playerText.get_rect()
         self.playerTextRect.center = (self.x, self.y)
-        self.playerTextRect.x -= int(self.playerText.get_width()/12)
+        self.playerTextRect.x -= int(self.playerText.get_width() / 12)
         self.playerTextRect.y -= int(self.playerText.get_height())
-        self.DataHitbox = pygame.Rect(self.playerTextRect.x, self.playerTextRect.y, self.playerText.get_width(), self.playerText.get_height())
+        self.DataHitbox = pygame.Rect(
+            self.playerTextRect.x,
+            self.playerTextRect.y,
+            self.playerText.get_width(),
+            self.playerText.get_height(),
+        )
         screen.blit(self.playerText, self.playerTextRect)
 
 
@@ -55,20 +65,29 @@ class Enemy:
             setattr(self, key, value)
         self.sprite = pygame.image.load("assets/enemy.png")
         self.player = pygame.transform.rotate(self.sprite, self.rotation)
-        
+
         self.rect = self.player.get_rect()
-        self.rect.x = self.x -int(self.player.get_width()/2)
-        self.rect.y = int(self.y-self.player.get_height()/2)
-        self.hitbox = pygame.Rect(self.rect.x, self.rect.y, self.player.get_width(), self.player.get_height())
+        self.rect.x = self.x - int(self.player.get_width() / 2)
+        self.rect.y = int(self.y - self.player.get_height() / 2)
+        self.hitbox = pygame.Rect(
+            self.rect.x, self.rect.y, self.player.get_width(), self.player.get_height()
+        )
         screen.blit(self.player, self.hitbox)
-        
+
         self.playerData = f"{self.id} [{self.health}]"
-        self.playerText = pygame.font.SysFont("comicsans", 20).render(self.playerData, 1, (255, 255, 255))
+        self.playerText = pygame.font.SysFont("comicsans", 20).render(
+            self.playerData, 1, (255, 255, 255)
+        )
         self.playerTextRect = self.playerText.get_rect()
         self.playerTextRect.center = (self.x, self.y)
-        self.playerTextRect.x -= int(self.playerText.get_width()/12)
+        self.playerTextRect.x -= int(self.playerText.get_width() / 12)
         self.playerTextRect.y -= int(self.playerText.get_height())
-        self.DataHitbox = pygame.Rect(self.playerTextRect.x, self.playerTextRect.y, self.playerText.get_width(), self.playerText.get_height())
+        self.DataHitbox = pygame.Rect(
+            self.playerTextRect.x,
+            self.playerTextRect.y,
+            self.playerText.get_width(),
+            self.playerText.get_height(),
+        )
         screen.blit(self.playerText, self.playerTextRect)
 
 
@@ -95,9 +114,15 @@ def render_players(player, enemies):
             _enemies[-1].update(**_val)
     return _player, _enemies
 
+
 def get_rotation(player_pos: list):
     cursor_pos = list(pygame.mouse.get_pos())
-    return int(math.atan2(player_pos[0] - cursor_pos[0],  player_pos[1]-cursor_pos[1]) * 180 / math.pi)
+    return int(
+        math.atan2(player_pos[0] - cursor_pos[0], player_pos[1] - cursor_pos[1])
+        * 180
+        / math.pi
+    )
+
 
 def render_map():
     screen.fill((12, 151, 0))
