@@ -91,6 +91,22 @@ class Enemy:
         screen.blit(self.playerText, self.playerTextRect)
 
 
+class Bullet:
+    def __init__(self, x, y, by):
+        self.x = x
+        self.y = y
+        self.by = by
+        mouseX, mouseY = pygame.mouse.get_pos()
+        angle = math.atan2(mouseY - self.y, mouseX - self.x)
+        self.Xvel = math.cos(angle) * 10
+        self.Yvel = math.sin(angle) * 10
+    
+    
+    def update(self):
+        self.x += self.Xvel
+        self.y += self.Yvel
+        pygame.draw.circle(screen, (255, 0, 0), (int(self.x), int(self.y)), 5)
+
 def render_players(player, enemies):
     _player = Player(player.split("||")[1].split(":")[1])
     vals = {}
@@ -137,6 +153,7 @@ def render_map():
         x = 0
         y += 32
 
+allBullets = []
 
 while running:
     clock.tick(120)
@@ -168,6 +185,13 @@ while running:
         net.send(
             f"message:update||{player.x}:{player.y + 5}:{player.health}:{player.rotation}"
         )
+    # if mouse left click
+    if pygame.mouse.get_pressed()[0]:
+        # net.send(f"message:shoot||{player.x}:{player.y}")
+        allBullets.append(Bullet(player.x, player.y, player.id))
+    print(len(allBullets))
+    for bullet in allBullets:
+        bullet.update()
 
     pygame.display.flip()
 
