@@ -15,6 +15,13 @@ mapdata = net.send("message:get_map")
 
 
 def render_players(player, enemies) -> (Player, []):
+    '''
+    It takes in a player and all the other players in the game and renders them.
+    
+    :param player: The player's name
+    :param enemies: A list of enemies
+    :return: The player and the enemies.
+    '''
     _player = Player(player.split("||")[1].split(":")[1])
     vals = {}
     for key in player.split("||"):
@@ -41,6 +48,13 @@ def render_players(player, enemies) -> (Player, []):
 
 
 def get_rotation(player_pos: list) -> int:
+    '''
+    Get the rotation of the player based on the cursor position
+    
+    :param player_pos: The player's position
+    :type player_pos: list
+    :return: The rotation of the player.
+    '''
     cursor_pos = list(pygame.mouse.get_pos())
     return int(
         math.atan2(player_pos[0] - cursor_pos[0], player_pos[1] - cursor_pos[1])
@@ -50,6 +64,9 @@ def get_rotation(player_pos: list) -> int:
 
 
 def render_map() -> None:
+    '''
+    It takes the map data and renders it to the screen
+    '''
     screen.fill((12, 151, 0))
     gameMap = json.loads(mapdata)
     walls = pygame.image.load("assets/map/wall.png")
@@ -70,6 +87,7 @@ user = net.send("message:get")
 player, enemies = render_players(user, allUsers)
 
 
+# A loop that runs while the game is running. It is used to update the game.
 while running:
     # global allUsers, user
     clock.tick(120)
@@ -109,11 +127,16 @@ while running:
     if pygame.mouse.get_pressed()[0]:
         net.send(f"message:shoot||{player.x}:{player.y}")
         # allBullets.append(Bullet(player.x, player.y, player.id))
-    print(len(allBullets))
+    _bullets = net.send("message:get_bullets")
+    _bullets = json.loads(_bullets)
+    for bullet in _bullets.values():
+        # allBullets.append(Bullet(bullet.split("||")[1].split(":")[1], bullet.split("||")[2].split(":")[1]))
+        for b in bullet:
+            allBullets.append(Bullet(int(b.split('||')[1].split(':')[1]), 
+                                     int(b.split('||')[2].split(':')[1]), 
+                                     b.split('||')[0].split(':')[1]))
     for bullet in allBullets:
-        if bullet.x > 800 or bullet.x < 0 or bullet.y > 616 or bullet.y < 0:
-            allBullets.remove(bullet)
-        bullet.update()
+        bullet.update(screen)
 
     pygame.display.flip()
 
