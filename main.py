@@ -14,7 +14,7 @@ net = network.Network()
 mapdata = net.send("message:get_map")
 
 
-def render_players(player, enemies):
+def render_players(player, enemies) -> (Player, []):
     _player = Player(player.split("||")[1].split(":")[1])
     vals = {}
     for key in player.split("||"):
@@ -40,7 +40,7 @@ def render_players(player, enemies):
     return _player, _enemies
 
 
-def get_rotation(player_pos: list):
+def get_rotation(player_pos: list) -> int:
     cursor_pos = list(pygame.mouse.get_pos())
     return int(
         math.atan2(player_pos[0] - cursor_pos[0], player_pos[1] - cursor_pos[1])
@@ -49,7 +49,7 @@ def get_rotation(player_pos: list):
     )
 
 
-def render_map():
+def render_map() -> None:
     screen.fill((12, 151, 0))
     gameMap = json.loads(mapdata)
     walls = pygame.image.load("assets/map/wall.png")
