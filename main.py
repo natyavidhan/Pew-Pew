@@ -131,10 +131,15 @@ while running:
     _bullets = json.loads(_bullets)
     for bullet in _bullets.values():
         # allBullets.append(Bullet(bullet.split("||")[1].split(":")[1], bullet.split("||")[2].split(":")[1]))
-        for b in bullet:
-            allBullets.append(Bullet(int(b.split('||')[1].split(':')[1]), 
-                                     int(b.split('||')[2].split(':')[1]), 
-                                     b.split('||')[0].split(':')[1]))
+        allBullets.extend(
+            Bullet(
+                int(b.split('||')[1].split(':')[1]),
+                int(b.split('||')[2].split(':')[1]),
+                b.split('||')[0].split(':')[1],
+            )
+            for b in bullet
+        )
+
     for bullet in allBullets:
         bullet.update(screen)
 

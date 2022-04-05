@@ -29,7 +29,6 @@ class Network:
         '''
         try:
             self.client.send(str.encode(data))
-            response = self.client.recv(2048).decode()
-            return response
+            return self.client.recv(2048).decode()
         except socket.error as e:
             return str(e)
