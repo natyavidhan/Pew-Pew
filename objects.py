@@ -12,8 +12,8 @@ class Player:
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
-        self.sprite = pygame.image.load("assets/player.png")
-        self.player = pygame.transform.rotate(self.sprite, self.rotation)
+        sprite = pygame.image.load("assets/player.png").convert_alpha()
+        self.player = pygame.transform.rotate(sprite, self.rotation)
 
         self.rect = self.player.get_rect()
         self.rect.x = self.pos[0] - int(self.player.get_width() / 2)

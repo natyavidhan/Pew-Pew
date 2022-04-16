@@ -82,6 +82,11 @@ while running:
     if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         x += 5
 
+    fps = round(clock.get_fps())
+    fpsText = pygame.font.SysFont("comicsansms", 20).render(f"FPS: {fps}", True, (255, 255, 255))
+    screen.blit(fpsText, (0, 0))
+
+
     player.update(pos=[x, y], rotation=get_rotation(player.pos))
     send_player(player)
     pygame.display.flip()
