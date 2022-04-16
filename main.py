@@ -12,14 +12,14 @@ clock = pygame.time.Clock()
 running = True
 net = network.Network()
 mapdata = net.send('{"type": "get", "payload": "map"}')
-print(mapdata)
 
 
 def render_players(player:dict, enemies:dict) -> (Player, []):
     _player = Player(player['id'], screen)
     _player.update(**player)
-    _enemies = [Enemy(enemy['id']) for enemy in enemies.values() if enemy['id'] != player['id']]
+    _enemies = [Enemy(enemy['id'], screen) for enemy in enemies.values() if enemy['id'] != player['id']]
     for enemy in _enemies:
+        print(enemies[enemy.id])
         enemy.update(**enemies[enemy.id])
     return _player, _enemies
 
@@ -62,6 +62,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     render_map()
+    render_players(user, allUsers)
 
     pygame.display.flip()
 
