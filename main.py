@@ -25,18 +25,8 @@ def render_players(player: dict, enemies: dict) -> (Player, []):
     ]
     for enemy in _enemies:
         enemy.update(**enemies[enemy.id])
+    
     return _player, _enemies
-
-
-def send_player(player: Player):
-    net.send(
-        json.dumps(
-            {
-                "type": "update",
-                "payload": {"pos": player.pos, "rotation": player.rotation},
-            }
-        )
-    )
 
 
 def get_rotation(player_pos: list) -> int:
@@ -74,21 +64,19 @@ while running:
     x, y = player.pos
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w] or keys[pygame.K_UP]:
-        y -= 5
+        net.send(json.dumps({"type": "move", "payload": "up"}))
     if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-        y += 5
+        net.send(json.dumps({"type": "move", "payload": "down"}))
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-        x -= 5
+        net.send(json.dumps({"type": "move", "payload": "left"}))
     if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-        x += 5
+        net.send(json.dumps({"type": "move", "payload": "right"}))
+    net.send(json.dumps({"type": "move", "payload":"rot", "deg": get_rotation(player.pos)}))
 
     fps = round(clock.get_fps())
     fpsText = pygame.font.SysFont("comicsansms", 20).render(f"FPS: {fps}", True, (255, 255, 255))
     screen.blit(fpsText, (0, 0))
 
-
-    player.update(pos=[x, y], rotation=get_rotation(player.pos))
-    send_player(player)
     pygame.display.flip()
 
 pygame.quit()
