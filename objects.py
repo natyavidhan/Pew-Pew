@@ -1,9 +1,6 @@
 import math, pygame
 
 class Player:
-    '''    
-    :param id: The id of the player
-    '''
     def __init__(self, id):
         self.id = id
         self.x = 0
@@ -12,9 +9,6 @@ class Player:
         self.rotation = 0
         self.screen = None
 
-    '''
-    It updates the player's data and blits it to the screen
-    '''
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -47,9 +41,6 @@ class Player:
 
 
 class Enemy:
-    '''    
-    :param id: The id of the player
-    '''
     def __init__(self, id):
         self.id = id
         self.x = 0
@@ -57,9 +48,6 @@ class Enemy:
         self.health = 100
         self.rotation = 0
 
-    '''
-    It updates the enemy's position, rotation, and health
-    '''
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -89,39 +77,3 @@ class Enemy:
             self.playerText.get_height(),
         )
         self.screen.blit(self.playerText, self.playerTextRect)
-
-
-class Bullet:
-    '''
-    The function creates a new instance of the class Ball. 
-    
-    The function takes in three parameters, x, y, and by. 
-    
-    The function creates a new instance of the class Ball and sets the x, y, and by
-    attributes of the instance. 
-    
-    The function returns the new instance of the class Ball
-    
-    :param x: The x position of the bullet
-    :param y: The y position of the bullet
-    :param by: The bullet's y position
-    '''
-    def __init__(self, x, y, by):
-        self.x = x
-        self.y = y
-        self.by = by
-        mouseX, mouseY = pygame.mouse.get_pos()
-        angle = math.atan2(mouseY - self.y, mouseX - self.x)
-        self.Xvel = math.cos(angle) * 10
-        self.Yvel = math.sin(angle) * 10
-
-    '''
-    It draws a circle at the current position of the object
-    
-    :param screen: The surface to draw the circle on
-    '''
-    def update(self, screen):
-        self.x += self.Xvel
-        self.y += self.Yvel
-        pygame.draw.circle(screen, (255, 0, 0), (int(self.x), int(self.y)), 5)
-
