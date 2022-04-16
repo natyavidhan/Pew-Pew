@@ -11,50 +11,15 @@ pygame.display.set_caption("Pew Pew")
 clock = pygame.time.Clock()
 running = True
 net = network.Network()
-mapdata = net.send("message:get_map")
+mapdata = net.send('{"type": "get", "payload": "map"}')
 
 
-def render_players(player, enemies) -> (Player, []):
-    '''
-    It takes in a player and all the other players in the game and renders them.
-    
-    :param player: The player's name
-    :param enemies: A list of enemies
-    :return: The player and the enemies.
-    '''
-    _player = Player(player.split("||")[1].split(":")[1])
-    vals = {}
-    for key in player.split("||"):
-        try:
-            vals[key.split(":")[0]] = int(key.split(":")[1])
-        except:
-            vals[key.split(":")[0]] = key.split(":")[1]
-    vals['screen'] = screen
-    _player.update(**vals)
 
-    _enemies = []
-    for user_ in allUsers.values():
-        if user_.split("||")[0].split(":")[1] != player.split("||")[0].split(":")[1]:
-            _val = {}
-            _enemies.append(Enemy(user_.split("||")[1].split(":")[1]))
-            for key in user_.split("||"):
-                try:
-                    _val[key.split(":")[0]] = int(key.split(":")[1])
-                except:
-                    _val[key.split(":")[0]] = key.split(":")[1]
-            _val['screen'] = screen
-            _enemies[-1].update(**_val)
-    return _player, _enemies
+def render_players(player:dict, enemies:dict) -> (Player, []):
+    pass
 
 
 def get_rotation(player_pos: list) -> int:
-    '''
-    Get the rotation of the player based on the cursor position
-    
-    :param player_pos: The player's position
-    :type player_pos: list
-    :return: The rotation of the player.
-    '''
     cursor_pos = list(pygame.mouse.get_pos())
     return int(
         math.atan2(player_pos[0] - cursor_pos[0], player_pos[1] - cursor_pos[1])
@@ -64,9 +29,6 @@ def get_rotation(player_pos: list) -> int:
 
 
 def render_map() -> None:
-    '''
-    It takes the map data and renders it to the screen
-    '''
     screen.fill((12, 151, 0))
     gameMap = json.loads(mapdata)
     walls = pygame.image.load("assets/map/wall.png")
@@ -81,13 +43,14 @@ def render_map() -> None:
 
 
 allBullets = []
-allUsers = net.send("message:get_all")
+
+allUsers = json.loads(net.send(json.dumps({"type": "get", "payload": "all"})))
 allUsers = json.loads(allUsers)
-user = net.send("message:get")
+user = json.loads(net.send(json.dumps({"type": "get", "payload": "self"})))
+
 player, enemies = render_players(user, allUsers)
 
 
-# A loop that runs while the game is running. It is used to update the game.
 while running:
     # global allUsers, user
     clock.tick(120)
@@ -95,34 +58,6 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     render_map()
-    user = net.send("message:get")
-    try:
-        allUsers = net.send("message:get_all")
-        allUsers = json.loads(allUsers)
-        player, enemies = render_players(user, allUsers)
-    except Exception as e:
-        # pass
-        print(e)
-    player.rotation = get_rotation([player.x, player.y])
-    net.send(f"message:update||{player.x}:{player.y}:{player.health}:{player.rotation}")
-
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        net.send(
-            f"message:update||{player.x - 5}:{player.y}:{player.health}:{player.rotation}"
-        )
-    if keys[pygame.K_RIGHT]:
-        net.send(
-            f"message:update||{player.x + 5}:{player.y}:{player.health}:{player.rotation}"
-        )
-    if keys[pygame.K_UP]:
-        net.send(
-            f"message:update||{player.x}:{player.y - 5}:{player.health}:{player.rotation}"
-        )
-    if keys[pygame.K_DOWN]:
-        net.send(
-            f"message:update||{player.x}:{player.y + 5}:{player.health}:{player.rotation}"
-        )
 
     pygame.display.flip()
 
