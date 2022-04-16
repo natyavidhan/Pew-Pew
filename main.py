@@ -123,20 +123,6 @@ while running:
         net.send(
             f"message:update||{player.x}:{player.y + 5}:{player.health}:{player.rotation}"
         )
-    # if mouse left click
-    if pygame.mouse.get_pressed()[0]:
-        net.send(f"message:shoot||{player.x}:{player.y}")
-        # allBullets.append(Bullet(player.x, player.y, player.id))
-    _bullets = net.send("message:get_bullets")
-    _bullets = json.loads(_bullets)
-    for bullet in _bullets.values():
-        # allBullets.append(Bullet(bullet.split("||")[1].split(":")[1], bullet.split("||")[2].split(":")[1]))
-        for b in bullet:
-            allBullets.append(Bullet(int(b.split('||')[1].split(':')[1]), 
-                                     int(b.split('||')[2].split(':')[1]), 
-                                     b.split('||')[0].split(':')[1]))
-    for bullet in allBullets:
-        bullet.update(screen)
 
     pygame.display.flip()
 
