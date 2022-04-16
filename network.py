@@ -17,7 +17,6 @@ class Network:
     def connect(self):
         self.client.connect(self.addr)
         data = self.client.recv(2048).decode()
-        print(data)
         return data
 
     def send(self, data):

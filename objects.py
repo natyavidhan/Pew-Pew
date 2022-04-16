@@ -1,13 +1,13 @@
 import math, pygame
 
 class Player:
-    def __init__(self, id):
+    def __init__(self, id, screen):
         self.id = id
         self.x = 0
         self.y = 0
         self.health = 100
         self.rotation = 0
-        self.screen = None
+        self.screen = screen
 
     def update(self, **kwargs):
         for key, value in kwargs.items():

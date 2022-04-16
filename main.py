@@ -2,7 +2,7 @@ import pygame
 import network
 import json
 import math
-from objects import Player, Enemy, Bullet
+from objects import Player, Enemy
 
 pygame.init()
 pygame.mixer.init()
@@ -12,11 +12,16 @@ clock = pygame.time.Clock()
 running = True
 net = network.Network()
 mapdata = net.send('{"type": "get", "payload": "map"}')
-
+print(mapdata)
 
 
 def render_players(player:dict, enemies:dict) -> (Player, []):
-    pass
+    _player = Player(player['id'], screen)
+    _player.update(**player)
+    _enemies = [Enemy(enemy['id']) for enemy in enemies.values() if enemy['id'] != player['id']]
+    for enemy in _enemies:
+        enemy.update(**enemies[enemy.id])
+    return _player, _enemies
 
 
 def get_rotation(player_pos: list) -> int:
@@ -45,7 +50,6 @@ def render_map() -> None:
 allBullets = []
 
 allUsers = json.loads(net.send(json.dumps({"type": "get", "payload": "all"})))
-allUsers = json.loads(allUsers)
 user = json.loads(net.send(json.dumps({"type": "get", "payload": "self"})))
 
 player, enemies = render_players(user, allUsers)
