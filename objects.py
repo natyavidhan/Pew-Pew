@@ -22,7 +22,6 @@ class Player:
         self.hitbox = pygame.Rect(
             self.rect.x, self.rect.y, self.player.get_width(), self.player.get_height()
         )
-        self.screen.blit(self.player, self.hitbox)
 
         self.playerData = f"X: {self.pos[0]}, Y: {self.pos[1]}"
         self.playerText = pygame.font.SysFont("comicsans", 20).render(
@@ -39,7 +38,11 @@ class Player:
             self.playerText.get_width(),
             self.playerText.get_height(),
         )
+
+    def draw(self):
+        self.screen.blit(self.player, self.hitbox)
         self.screen.blit(self.playerText, self.playerTextRect)
+
 
 
 class Enemy:
